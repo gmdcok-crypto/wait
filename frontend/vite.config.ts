@@ -12,8 +12,8 @@ export default defineConfig({
         name: "대기 호출",
         short_name: "대기호출",
         description: "키오스크 대기등록 및 스태프 호출 PWA",
-        theme_color: "#0f3d2e",
-        background_color: "#f3efe6",
+        theme_color: "#0a1628",
+        background_color: "#eef2f6",
         display: "standalone",
         start_url: "/",
         icons: [

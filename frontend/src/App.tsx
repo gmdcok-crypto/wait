@@ -18,20 +18,30 @@ export default function App() {
 function Home() {
   return (
     <main className="home">
-      <div className="home-bg" aria-hidden />
-      <header className="home-brand">
-        <p className="eyebrow">Wait Call</p>
-        <h1>대기 호출</h1>
-        <p className="lede">키오스크에서 등록하고, 호출 앱으로 카톡·문자 안내를 보냅니다.</p>
-      </header>
-      <nav className="home-actions">
-        <Link className="btn btn-primary" to="/kiosk">
-          키오스크
-        </Link>
-        <Link className="btn btn-secondary" to="/staff">
-          호출 앱
-        </Link>
-      </nav>
+      <div className="atmosphere" aria-hidden>
+        <div className="atmosphere-wash" />
+        <div className="atmosphere-grid" />
+        <div className="atmosphere-orb atmosphere-orb-a" />
+        <div className="atmosphere-orb atmosphere-orb-b" />
+      </div>
+
+      <div className="home-stage reveal">
+        <p className="brand-mark">WAIT CALL</p>
+        <h1 className="brand-title">
+          대기
+          <span className="brand-slash">/</span>
+          호출
+        </h1>
+        <p className="home-line">등록은 키오스크에서, 안내는 호출 한 번으로.</p>
+        <nav className="home-actions" aria-label="모드 선택">
+          <Link className="btn btn-ink" to="/kiosk">
+            키오스크
+          </Link>
+          <Link className="btn btn-lagoon" to="/staff">
+            호출 앱
+          </Link>
+        </nav>
+      </div>
     </main>
   );
 }

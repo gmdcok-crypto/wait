@@ -38,7 +38,7 @@ export default function StaffPage() {
     setBusyId(ticket.id);
     try {
       const out = await callTicket(ticket.id, recall);
-      setToast(`${ticket.number}번 → ${out.channel}: ${out.message}`);
+      setToast(`${ticket.number}번 · ${channelLabel(out.channel)} 전송`);
       await refresh();
     } catch (err) {
       setToast(err instanceof Error ? err.message : "호출 실패");
@@ -64,98 +64,123 @@ export default function StaffPage() {
 
   return (
     <main className="staff">
-      <header className="staff-header">
-        <div>
-          <p className="eyebrow">호출 앱 · {STORE_SLUG}</p>
-          <h1>오늘의 대기열</h1>
-        </div>
-        <button className="btn btn-secondary" type="button" onClick={() => void refresh()}>
-          새로고침
-        </button>
-      </header>
+      <div className="atmosphere atmosphere-soft" aria-hidden>
+        <div className="atmosphere-wash" />
+        <div className="atmosphere-grid" />
+      </div>
 
-      {toast && (
-        <div className="toast" role="status">
-          {toast}
-          <button type="button" onClick={() => setToast(null)}>
-            닫기
+      <div className="staff-stage reveal">
+        <header className="staff-header">
+          <div>
+            <div className="kiosk-brand-row">
+              <p className="brand-mark">WAIT CALL</p>
+              <Link className="quiet-link" to="/">
+                홈
+              </Link>
+            </div>
+            <h1 className="page-title">대기열</h1>
+            <p className="page-sub">오늘 · {STORE_SLUG}</p>
+          </div>
+          <button className="btn btn-ghost" type="button" onClick={() => void refresh()}>
+            새로고침
           </button>
-        </div>
-      )}
+        </header>
 
-      {error && <p className="error">{error}</p>}
-      {loading && <p className="meta">불러오는 중…</p>}
+        {toast && (
+          <div className="toast" role="status">
+            <span>{toast}</span>
+            <button type="button" onClick={() => setToast(null)}>
+              닫기
+            </button>
+          </div>
+        )}
 
-      <section className="queue">
-        <h2>대기 / 호출중</h2>
-        {active.length === 0 && !loading && <p className="meta">대기 중인 고객이 없습니다.</p>}
-        <ul className="ticket-list">
-          {active.map((t) => (
-            <li key={t.id} className={`ticket-row status-${t.status}`}>
-              <div className="ticket-main">
-                <span className="num">{t.number}</span>
-                <div>
-                  <strong>{maskPhone(t.phone)}</strong>
-                  <p className="meta">
-                    {t.party_size}명 · {statusLabel(t.status)}
-                  </p>
+        {error && <p className="error">{error}</p>}
+        {loading && <p className="meta">불러오는 중…</p>}
+
+        <section className="queue" aria-label="대기 및 호출중">
+          <div className="section-head">
+            <h2>진행</h2>
+            <span className="count">{active.length}</span>
+          </div>
+          {active.length === 0 && !loading && (
+            <p className="empty-line">대기 중인 고객이 없습니다.</p>
+          )}
+          <ul className="ticket-list">
+            {active.map((t, index) => (
+              <li
+                key={t.id}
+                className={`ticket-row status-${t.status}`}
+                style={{ animationDelay: `${index * 40}ms` }}
+              >
+                <div className="ticket-main">
+                  <span className="num">{t.number}</span>
+                  <div className="ticket-copy">
+                    <strong>{maskPhone(t.phone)}</strong>
+                    <p className="meta">
+                      {t.party_size}명
+                      <span className="dot">·</span>
+                      {statusLabel(t.status)}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="ticket-actions">
-                <button
-                  className="btn btn-primary"
-                  type="button"
-                  disabled={busyId === t.id}
-                  onClick={() => void onCall(t, t.status === "called")}
-                >
-                  {t.status === "called" ? "재호출" : "호출"}
-                </button>
-                <button
-                  className="btn btn-ghost"
-                  type="button"
-                  disabled={busyId === t.id}
-                  onClick={() => void onStatus(t, "completed")}
-                >
-                  완료
-                </button>
-                <button
-                  className="btn btn-ghost"
-                  type="button"
-                  disabled={busyId === t.id}
-                  onClick={() => void onStatus(t, "no_show")}
-                >
-                  부재
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
+                <div className="ticket-actions">
+                  <button
+                    className="btn btn-lagoon"
+                    type="button"
+                    disabled={busyId === t.id}
+                    onClick={() => void onCall(t, t.status === "called")}
+                  >
+                    {t.status === "called" ? "재호출" : "호출"}
+                  </button>
+                  <button
+                    className="btn btn-ghost"
+                    type="button"
+                    disabled={busyId === t.id}
+                    onClick={() => void onStatus(t, "completed")}
+                  >
+                    완료
+                  </button>
+                  <button
+                    className="btn btn-ghost"
+                    type="button"
+                    disabled={busyId === t.id}
+                    onClick={() => void onStatus(t, "no_show")}
+                  >
+                    부재
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
 
-      <section className="queue muted-block">
-        <h2>처리 완료</h2>
-        <ul className="ticket-list compact">
-          {done.map((t) => (
-            <li key={t.id} className="ticket-row">
-              <span className="num small">{t.number}</span>
-              <span>
-                {maskPhone(t.phone)} · {statusLabel(t.status)}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <Link className="text-link" to="/">
-        홈
-      </Link>
+        <section className="queue queue-done" aria-label="처리 완료">
+          <div className="section-head">
+            <h2>완료</h2>
+            <span className="count">{done.length}</span>
+          </div>
+          <ul className="ticket-list compact">
+            {done.map((t) => (
+              <li key={t.id} className="ticket-row done-row">
+                <span className="num small">{t.number}</span>
+                <span className="done-copy">
+                  {maskPhone(t.phone)}
+                  <span className="dot">·</span>
+                  {statusLabel(t.status)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
     </main>
   );
 }
 
 function maskPhone(phone: string) {
   if (phone.length < 8) return phone;
-  return `${phone.slice(0, 3)}-****-${phone.slice(-4)}`;
+  return `${phone.slice(0, 3)} **** ${phone.slice(-4)}`;
 }
 
 function statusLabel(status: Ticket["status"]) {
@@ -173,4 +198,11 @@ function statusLabel(status: Ticket["status"]) {
     default:
       return status;
   }
+}
+
+function channelLabel(channel: string) {
+  if (channel === "kakao") return "카카오톡";
+  if (channel === "sms") return "문자";
+  if (channel === "console") return "테스트";
+  return channel;
 }
