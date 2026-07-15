@@ -1,8 +1,9 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { registerTicket, TicketCallOut } from "../api/client";
 
 const STORE_SLUG = import.meta.env.VITE_STORE_SLUG || "demo";
+const SUCCESS_RESET_MS = 2000;
 
 export default function KioskPage() {
   const [phone, setPhone] = useState("");
@@ -10,6 +11,16 @@ export default function KioskPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<TicketCallOut | null>(null);
+
+  useEffect(() => {
+    if (!result) return;
+    const timer = window.setTimeout(() => {
+      setResult(null);
+      setPartySize(1);
+      setError(null);
+    }, SUCCESS_RESET_MS);
+    return () => window.clearTimeout(timer);
+  }, [result]);
 
   const displayPhone = useMemo(() => formatPhone(phone), [phone]);
   const hasInput = phone.length > 0;
@@ -70,9 +81,6 @@ export default function KioskPage() {
             <span className="dot">·</span>
             {channelLabel(result.channel)} 안내
           </p>
-          <button className="btn btn-ink wide" type="button" onClick={() => setResult(null)}>
-            다음 고객
-          </button>
         </div>
       </main>
     );
