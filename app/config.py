@@ -6,15 +6,28 @@ from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+def _normalize_mysql_url(url: str) -> str:
+    url = (url or "").strip()
+    if not url:
+        return ""
+    # Railway/MySQL plugins often give mysql:// — SQLAlchemy needs a driver.
+    if url.startswith("mysql://"):
+        return "mysql+pymysql://" + url[len("mysql://") :]
+    if url.startswith("mysql+pymysql://"):
+        return url
+    return url
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     app_name: str = "Wait Call API"
-    debug: bool = True
-    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+    debug: bool = False
+    cors_origins: str = "*"
 
-    # Railway: MYSQL* 연결 시 자동 조립. 직접 넣으려면 DATABASE_URL 사용.
+    # Prefer DATABASE_URL / MYSQL_URL; else assemble from MYSQL*
     database_url: str = ""
+    mysql_url: Optional[str] = None
     mysqlhost: Optional[str] = None
     mysqlport: Optional[str] = None
     mysqluser: Optional[str] = None
@@ -38,6 +51,14 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def assemble_database_url(self) -> "Settings":
+        if self.database_url:
+            self.database_url = _normalize_mysql_url(self.database_url)
+            return self
+
+        if self.mysql_url:
+            self.database_url = _normalize_mysql_url(self.mysql_url)
+            return self
+
         if self.mysqlhost and self.mysqluser and self.mysqldatabase:
             password = quote_plus(self.mysqlpassword or "")
             user = quote_plus(self.mysqluser)

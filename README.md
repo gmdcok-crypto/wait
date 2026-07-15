@@ -14,9 +14,13 @@
 ## Railway 설정 (기존과 동일)
 
 1. GitHub 레포 연결 (Root Directory 설정 불필요)
-2. **MySQL** 추가 후 변수 연결  
-   (`MYSQLHOST`, `MYSQLUSER`, `MYSQLPASSWORD`, `MYSQLDATABASE`, `MYSQLPORT`)
-3. 추가 환경변수:
+2. 프로젝트에 **MySQL** 서비스 추가
+3. **API 서비스 Variables**에서 MySQL을 연결 (중요)  
+   - MySQL 서비스 → Variables → 각 값을 API 서비스에 **Add Reference**  
+   - 또는 API에 `MYSQLHOST`, `MYSQLUSER`, `MYSQLPASSWORD`, `MYSQLDATABASE`, `MYSQLPORT`  
+   - `DATABASE_URL` / `MYSQL_URL` 하나만 넣어도 됩니다 (`mysql://`도 자동 변환)
+4. 변수 개수가 MySQL 관련으로 여러 개여야 합니다. **Variables가 1개면 DB 미연결**이라 Healthcheck가 실패합니다.
+5. 선택 환경변수:
 
 ```env
 CORS_ORIGINS=*

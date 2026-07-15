@@ -7,6 +7,12 @@ from app.config import get_settings
 
 settings = get_settings()
 
+if not settings.database_url:
+    raise RuntimeError(
+        "DATABASE_URL / MYSQL_URL / MYSQL* 환경변수가 없습니다. "
+        "Railway에서 MySQL 서비스를 이 API 서비스에 Variable Reference로 연결하세요."
+    )
+
 engine = create_engine(
     settings.database_url,
     pool_pre_ping=True,
