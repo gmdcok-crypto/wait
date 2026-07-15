@@ -111,7 +111,7 @@ export default function KioskPage() {
             className={`phone-display ${hasInput ? "is-filled" : ""}`}
             aria-live="polite"
           >
-            {displayPhone || "010 — — — —"}
+            {displayPhone || "010-____-____"}
           </div>
 
           <div className="party-row">
@@ -188,13 +188,13 @@ export default function KioskPage() {
 
 function formatPhone(digits: string) {
   if (digits.length <= 3) return digits;
-  if (digits.length <= 7) return `${digits.slice(0, 3)} ${digits.slice(3)}`;
-  return `${digits.slice(0, 3)} ${digits.slice(3, 7)} ${digits.slice(7, 11)}`;
+  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
 }
 
 function maskPhone(phone: string) {
   if (phone.length < 8) return phone;
-  return `${phone.slice(0, 3)} **** ${phone.slice(-4)}`;
+  return `${phone.slice(0, 3)}-****-${phone.slice(-4)}`;
 }
 
 function channelLabel(channel: string) {

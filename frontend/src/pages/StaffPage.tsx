@@ -180,7 +180,7 @@ export default function StaffPage() {
 
 function maskPhone(phone: string) {
   if (phone.length < 8) return phone;
-  return `${phone.slice(0, 3)} **** ${phone.slice(-4)}`;
+  return `${phone.slice(0, 3)}-****-${phone.slice(-4)}`;
 }
 
 function statusLabel(status: Ticket["status"]) {
