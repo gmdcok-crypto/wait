@@ -2,10 +2,13 @@ import logging
 import threading
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Dict, Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select, text
 
 from app.api import stores, tickets
@@ -17,8 +20,19 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("wait")
 settings = get_settings()
 
+STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
+
 _db_ready = False
 _db_error: Optional[str] = None
+
+API_PREFIXES = (
+    "api",
+    "docs",
+    "redoc",
+    "openapi.json",
+    "health",
+    "ready",
+)
 
 
 def seed_default_store() -> None:
@@ -67,7 +81,6 @@ def init_db(retries: int = 30, delay_sec: float = 2.0) -> None:
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    # Listen for healthchecks immediately; init DB in background.
     thread = threading.Thread(target=init_db, daemon=True)
     thread.start()
     yield
@@ -89,7 +102,6 @@ app.include_router(tickets.router, prefix="/api")
 
 @app.get("/health")
 def health() -> Dict[str, str]:
-    # Process liveness for Railway network healthcheck
     return {"status": "ok"}
 
 
@@ -102,11 +114,32 @@ def ready() -> Dict[str, object]:
     }
 
 
-@app.get("/")
-def root() -> Dict[str, str]:
-    return {
-        "service": settings.app_name,
-        "docs": "/docs",
-        "health": "/health",
-        "ready": "/ready",
-    }
+if STATIC_DIR.exists():
+    assets = STATIC_DIR / "assets"
+    if assets.exists():
+        app.mount("/assets", StaticFiles(directory=str(assets)), name="assets")
+
+    @app.get("/")
+    def spa_index() -> FileResponse:
+        return FileResponse(STATIC_DIR / "index.html")
+
+    @app.get("/{full_path:path}")
+    def spa_fallback(full_path: str) -> FileResponse:
+        first = full_path.split("/", 1)[0]
+        if first in API_PREFIXES:
+            # Should be handled by earlier routes; keep a safe JSON fallback.
+            return FileResponse(STATIC_DIR / "index.html")
+        candidate = STATIC_DIR / full_path
+        if candidate.is_file():
+            return FileResponse(candidate)
+        return FileResponse(STATIC_DIR / "index.html")
+else:
+
+    @app.get("/")
+    def root() -> Dict[str, str]:
+        return {
+            "service": settings.app_name,
+            "docs": "/docs",
+            "health": "/health",
+            "ready": "/ready",
+        }

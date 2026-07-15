@@ -31,10 +31,13 @@ DEFAULT_STORE_SLUG=demo
 
 확인:
 
-- `https://<서비스>/health`
-- `https://<서비스>/docs`
+- 앱 홈: `https://<서비스>/`
+- 키오스크: `https://<서비스>/kiosk`
+- 호출 앱: `https://<서비스>/staff`
+- API 문서: `https://<서비스>/docs`
+- 상태: `https://<서비스>/health` , `/ready`
 
-프론트(`frontend`)는 별도 배포하거나, 이후 API에서 정적 서빙으로 붙이면 됩니다.
+프론트는 Docker 빌드 시 `frontend`를 묶어서 같은 서비스에서 제공합니다.
 
 ## 주요 API
 
