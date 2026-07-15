@@ -1,21 +1,27 @@
 from functools import lru_cache
 from typing import List, Optional
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, urlparse
 
 from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 def _normalize_mysql_url(url: str) -> str:
-    url = (url or "").strip()
+    url = (url or "").strip().strip('"').strip("'")
     if not url:
         return ""
-    # Railway/MySQL plugins often give mysql:// — SQLAlchemy needs a driver.
     if url.startswith("mysql://"):
         return "mysql+pymysql://" + url[len("mysql://") :]
     if url.startswith("mysql+pymysql://"):
         return url
     return url
+
+
+def _safe_db_host(url: str) -> str:
+    try:
+        return urlparse(url.replace("mysql+pymysql://", "mysql://", 1)).hostname or "?"
+    except Exception:
+        return "?"
 
 
 class Settings(BaseSettings):
@@ -25,16 +31,20 @@ class Settings(BaseSettings):
     debug: bool = False
     cors_origins: str = "*"
 
-    # Prefer DATABASE_URL / MYSQL_URL; else assemble from MYSQL*
     database_url: str = ""
     mysql_url: Optional[str] = None
+    # Railway common keys (with/without underscores)
     mysqlhost: Optional[str] = None
+    mysql_host: Optional[str] = None
     mysqlport: Optional[str] = None
+    mysql_port: Optional[str] = None
     mysqluser: Optional[str] = None
+    mysql_user: Optional[str] = None
     mysqlpassword: Optional[str] = None
+    mysql_password: Optional[str] = None
     mysqldatabase: Optional[str] = None
+    mysql_database: Optional[str] = None
 
-    # console | kakao_sms
     notify_mode: str = "console"
 
     kakao_api_key: str = ""
@@ -59,15 +69,16 @@ class Settings(BaseSettings):
             self.database_url = _normalize_mysql_url(self.mysql_url)
             return self
 
-        if self.mysqlhost and self.mysqluser and self.mysqldatabase:
-            password = quote_plus(self.mysqlpassword or "")
-            user = quote_plus(self.mysqluser)
-            host = self.mysqlhost
-            port = self.mysqlport or "3306"
-            db = self.mysqldatabase
+        host = self.mysqlhost or self.mysql_host
+        user = self.mysqluser or self.mysql_user
+        password = self.mysqlpassword if self.mysqlpassword is not None else self.mysql_password
+        db = self.mysqldatabase or self.mysql_database
+        port = self.mysqlport or self.mysql_port or "3306"
+
+        if host and user and db:
             self.database_url = "mysql+pymysql://{user}:{password}@{host}:{port}/{db}".format(
-                user=user,
-                password=password,
+                user=quote_plus(user),
+                password=quote_plus(password or ""),
                 host=host,
                 port=port,
                 db=db,
@@ -85,6 +96,10 @@ class Settings(BaseSettings):
     @property
     def cors_origin_list(self) -> List[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
+    @property
+    def database_host(self) -> str:
+        return _safe_db_host(self.database_url)
 
 
 @lru_cache
