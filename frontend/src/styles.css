@@ -1,0 +1,376 @@
+:root {
+  --bg: #e7f0ea;
+  --bg-deep: #0f3d2e;
+  --ink: #14231c;
+  --muted: #4d6358;
+  --accent: #1f7a54;
+  --accent-2: #c4a35a;
+  --surface: rgba(255, 255, 255, 0.72);
+  --line: rgba(20, 35, 28, 0.12);
+  --danger: #b42318;
+  --shadow: 0 18px 40px rgba(15, 61, 46, 0.12);
+  --font-display: "Outfit", "IBM Plex Sans KR", sans-serif;
+  --font-body: "IBM Plex Sans KR", sans-serif;
+  color: var(--ink);
+  font-family: var(--font-body);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(196, 163, 90, 0.28), transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, rgba(31, 122, 84, 0.18), transparent 50%),
+    linear-gradient(160deg, #f4f7f2 0%, var(--bg) 45%, #d9e8df 100%);
+  min-height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.home {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  gap: 2rem;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.home-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, transparent 40%, rgba(15, 61, 46, 0.08)),
+    repeating-linear-gradient(
+      -18deg,
+      transparent,
+      transparent 22px,
+      rgba(15, 61, 46, 0.04) 22px,
+      rgba(15, 61, 46, 0.04) 23px
+    );
+  pointer-events: none;
+}
+
+.home-brand,
+.home-actions {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.home-brand h1,
+.kiosk h1,
+.staff h1,
+.success-view h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0.2rem 0 0.6rem;
+  font-size: clamp(2.4rem, 6vw, 4rem);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0;
+}
+
+.lede {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 28rem;
+}
+
+.home-brand .lede {
+  margin-inline: auto;
+}
+
+.home-actions {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.9rem 1.4rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary {
+  background: var(--bg-deep);
+  color: #f4f7f2;
+  box-shadow: var(--shadow);
+}
+
+.btn-secondary {
+  background: var(--accent-2);
+  color: #1a160c;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 12px;
+  padding: 0.65rem 0.9rem;
+}
+
+.btn.wide {
+  width: 100%;
+}
+
+.kiosk,
+.staff,
+.success-view {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.kiosk-form {
+  background: var(--surface);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: 1.25rem;
+  display: grid;
+  gap: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.phone-display {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  font-weight: 700;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 18px;
+  background: #fff;
+  border: 1px solid var(--line);
+  letter-spacing: 0.04em;
+  min-height: 4.2rem;
+}
+
+.party {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 600;
+}
+
+.party select {
+  font: inherit;
+  padding: 0.55rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.key {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 1.1rem 0;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: #fff;
+  cursor: pointer;
+}
+
+.key:active {
+  background: #eef5f0;
+}
+
+.key.muted {
+  color: var(--muted);
+  background: #f3f6f4;
+}
+
+.ticket-number {
+  font-size: clamp(5rem, 18vw, 8rem) !important;
+  line-height: 0.9;
+  color: var(--bg-deep);
+}
+
+.success-view {
+  text-align: center;
+  place-items: center;
+  min-height: 100vh;
+}
+
+.meta,
+.message {
+  color: var(--muted);
+  margin: 0;
+}
+
+.error {
+  color: var(--danger);
+  margin: 0;
+  font-weight: 600;
+}
+
+.text-link {
+  justify-self: center;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.staff-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+}
+
+.queue h2 {
+  font-family: var(--font-display);
+  margin: 0 0 0.75rem;
+  font-size: 1.2rem;
+}
+
+.ticket-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.ticket-row {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 1rem;
+  display: grid;
+  gap: 0.85rem;
+  box-shadow: var(--shadow);
+}
+
+.ticket-row.status-called {
+  border-color: rgba(31, 122, 84, 0.45);
+  background: rgba(31, 122, 84, 0.08);
+}
+
+.ticket-main {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--bg-deep);
+  color: #f4f7f2;
+}
+
+.num.small {
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1.1rem;
+  border-radius: 10px;
+}
+
+.ticket-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ticket-list.compact .ticket-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: none;
+  padding: 0.7rem 0.9rem;
+}
+
+.muted-block {
+  opacity: 0.85;
+}
+
+.toast {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  background: #133528;
+  color: #f4f7f2;
+}
+
+.toast button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+@media (min-width: 720px) {
+  .ticket-row:not(.compact .ticket-row) {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+}
