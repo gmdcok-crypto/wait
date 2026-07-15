@@ -19,6 +19,14 @@ export default function KioskPage() {
     setPhone((p) => p + digit);
   }
 
+  function press010() {
+    setPhone((p) => {
+      if (p.startsWith("010")) return p;
+      if (!p) return "010";
+      return ("010" + p).slice(0, 11);
+    });
+  }
+
   function backspace() {
     setPhone((p) => p.slice(0, -1));
   }
@@ -128,6 +136,15 @@ export default function KioskPage() {
               </select>
             </div>
           </div>
+
+          <button
+            type="button"
+            className="key key-prefix"
+            onClick={press010}
+            aria-label="010 입력"
+          >
+            010
+          </button>
 
           <div className="keypad">
             {"123456789".split("").map((d) => (
